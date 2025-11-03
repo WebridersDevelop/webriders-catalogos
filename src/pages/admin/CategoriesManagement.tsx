@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, query, where } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { Category } from '@/types';
@@ -19,7 +19,6 @@ const PRESET_COLORS = [
 export const CategoriesManagement: React.FC = () => {
   const { catalogId } = useParams<{ catalogId: string }>();
 
-  const [catalogName, setCatalogName] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -35,23 +34,9 @@ export const CategoriesManagement: React.FC = () => {
 
   useEffect(() => {
     if (catalogId) {
-      loadCatalogInfo();
       loadCategories();
     }
   }, [catalogId]);
-
-  const loadCatalogInfo = async () => {
-    try {
-      const catalogRef = doc(db, 'catalogs', catalogId!);
-      const catalogSnap = await getDoc(catalogRef);
-
-      if (catalogSnap.exists()) {
-        setCatalogName(catalogSnap.data().name);
-      }
-    } catch (error) {
-      console.error('Error al cargar catálogo:', error);
-    }
-  };
 
   const loadCategories = async () => {
     try {

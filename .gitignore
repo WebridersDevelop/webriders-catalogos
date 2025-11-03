@@ -39,3 +39,5 @@ clean-products.js
 *.tmp
 *.temp
 nul
+
+.vercel

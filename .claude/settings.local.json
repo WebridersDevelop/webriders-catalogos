@@ -13,7 +13,13 @@
       "Bash(cat:*)",
       "Bash(git init:*)",
       "Bash(git add:*)",
-      "Bash(dir /s /b nul)"
+      "Bash(dir /s /b nul)",
+      "Bash(git commit:*)",
+      "Bash(git branch:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(vercel login)",
+      "Bash(vercel --prod:*)"
     ],
     "deny": [],
     "ask": []

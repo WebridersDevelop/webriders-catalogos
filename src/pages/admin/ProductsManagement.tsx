@@ -20,7 +20,6 @@ interface ProductFormData {
 export const ProductsManagement: React.FC = () => {
   const { catalogId } = useParams<{ catalogId: string }>();
 
-  const [catalogName, setCatalogName] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,24 +44,10 @@ export const ProductsManagement: React.FC = () => {
 
   useEffect(() => {
     if (catalogId) {
-      loadCatalogInfo();
       loadProducts();
       loadCategories();
     }
   }, [catalogId]);
-
-  const loadCatalogInfo = async () => {
-    try {
-      const catalogRef = doc(db, 'catalogs', catalogId!);
-      const catalogSnap = await getDoc(catalogRef);
-
-      if (catalogSnap.exists()) {
-        setCatalogName(catalogSnap.data().name);
-      }
-    } catch (error) {
-      console.error('Error al cargar catálogo:', error);
-    }
-  };
 
   const loadProducts = async () => {
     try {
