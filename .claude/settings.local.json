@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout:*)",
+      "Bash(npm run build)",
+      "Bash(firebase login:*)",
+      "Bash(npx tsc:*)",
+      "WebSearch",
+      "Bash(cat:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(dir /s /b nul)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

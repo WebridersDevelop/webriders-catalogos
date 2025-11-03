@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: rgb(249 250 251);
+    color: rgb(17 24 39);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    background-color: rgb(2 132 199);
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+  }
+
+  .btn-primary:hover {
+    background-color: rgb(3 105 161);
+  }
+
+  .btn-secondary {
+    background-color: rgb(229 231 235);
+    color: rgb(31 41 55);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background-color: rgb(209 213 219);
+  }
+
+  .card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    padding: 1.5rem;
+    transition: box-shadow 0.2s;
+  }
+
+  .card:hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  }
+}
