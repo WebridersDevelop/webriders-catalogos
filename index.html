@@ -9,23 +9,56 @@
   <body>
     <div id="root"></div>
     <script>
-      // Suprimir errores de extensiones de Chrome
-      window.addEventListener('error', function(e) {
-        if (e.filename && e.filename.includes('chrome-extension://')) {
-          e.preventDefault();
-          e.stopPropagation();
-          return true;
-        }
-      }, true);
+      // Filtrar errores de extensiones de Chrome - Solución completa
+      (function() {
+        // 1. Filtrar errores de window
+        window.addEventListener('error', function(e) {
+          if (e.filename && e.filename.includes('chrome-extension://')) {
+            e.preventDefault();
+            e.stopPropagation();
+            return true;
+          }
+        }, true);
 
-      // Suprimir errores no manejados de promesas de extensiones
-      window.addEventListener('unhandledrejection', function(e) {
-        if (e.reason && e.reason.stack && e.reason.stack.includes('chrome-extension://')) {
-          e.preventDefault();
-          e.stopPropagation();
-          return true;
-        }
-      }, true);
+        // 2. Filtrar promesas rechazadas
+        window.addEventListener('unhandledrejection', function(e) {
+          if (e.reason && e.reason.stack && e.reason.stack.includes('chrome-extension://')) {
+            e.preventDefault();
+            e.stopPropagation();
+            return true;
+          }
+        }, true);
+
+        // 3. Sobrescribir console.error para filtrar mensajes de extensiones
+        const originalError = console.error.bind(console);
+        console.error = function() {
+          const args = Array.from(arguments);
+          const message = args.join(' ');
+
+          // Filtrar mensajes de extensiones
+          if (message.includes('chrome-extension://') ||
+              message.includes('background.js') ||
+              message.includes('FrameDoesNotExist') ||
+              message.includes('DelayedMessageSender')) {
+            return; // Suprimir
+          }
+
+          originalError.apply(console, args);
+        };
+
+        // 4. Sobrescribir console.warn para filtrar warnings de extensiones
+        const originalWarn = console.warn.bind(console);
+        console.warn = function() {
+          const args = Array.from(arguments);
+          const message = args.join(' ');
+
+          if (message.includes('chrome-extension://')) {
+            return; // Suprimir
+          }
+
+          originalWarn.apply(console, args);
+        };
+      })();
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
