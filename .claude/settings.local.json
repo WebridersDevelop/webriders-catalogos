@@ -22,7 +22,8 @@
       "Bash(vercel --prod:*)",
       "Bash(vercel env add:*)",
       "Bash(vercel env:*)",
-      "Bash(firebase projects:list:*)"
+      "Bash(firebase projects:list:*)",
+      "Bash(printf:*)"
     ],
     "deny": [],
     "ask": []
