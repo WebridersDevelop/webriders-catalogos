@@ -129,13 +129,15 @@ export const CatalogPage: React.FC = () => {
                   className={`
                     px-4 py-2 rounded-full font-medium text-sm transition-all duration-200
                     ${selectedCategory === 'all'
-                      ? 'bg-primary-600 text-white shadow-md transform scale-105'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-primary-600 shadow-md transform scale-105'
+                      : 'bg-gray-100 hover:bg-gray-200'
                     }
                   `}
                 >
-                  Todos
-                  <span className="ml-2 text-xs opacity-75">
+                  <span className={selectedCategory === 'all' ? 'text-white' : 'text-gray-700'}>
+                    Todos
+                  </span>
+                  <span className={`ml-2 text-xs ${selectedCategory === 'all' ? 'text-white opacity-90' : 'text-gray-500'}`}>
                     ({currentCatalog.products.length})
                   </span>
                 </button>
@@ -148,13 +150,15 @@ export const CatalogPage: React.FC = () => {
                     className={`
                       px-4 py-2 rounded-full font-medium text-sm transition-all duration-200
                       ${selectedCategory === category
-                        ? 'bg-primary-600 text-white shadow-md transform scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-primary-600 shadow-md transform scale-105'
+                        : 'bg-gray-100 hover:bg-gray-200'
                       }
                     `}
                   >
-                    {category}
-                    <span className="ml-2 text-xs opacity-75">
+                    <span className={selectedCategory === category ? 'text-white' : 'text-gray-700'}>
+                      {category}
+                    </span>
+                    <span className={`ml-2 text-xs ${selectedCategory === category ? 'text-white opacity-90' : 'text-gray-500'}`}>
                       ({categoryCounts[category] || 0})
                     </span>
                   </button>
