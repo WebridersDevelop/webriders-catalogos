@@ -145,8 +145,8 @@ export const ProductsManagement: React.FC = () => {
     setSuccess(null);
     setSavingProgress('');
 
-    if (!formData.name || !formData.price || !formData.category) {
-      setError('Por favor complete los campos requeridos');
+    if (!formData.name || !formData.category) {
+      setError('Por favor complete los campos requeridos (Nombre y Categoría)');
       return;
     }
 
@@ -193,17 +193,25 @@ export const ProductsManagement: React.FC = () => {
       setSavingProgress('Preparando datos del producto...');
       await new Promise(resolve => setTimeout(resolve, 300)); // Simulación visual
 
-      const productData = {
+      const productData: any = {
         name: formData.name,
         description: formData.description,
-        price: Number(formData.price),
         image: formData.image,
         images: formData.images,
         category: formData.category,
-        stock: Number(formData.stock),
-        sku: formData.sku,
         catalogId: catalogId
       };
+
+      // Campos opcionales - solo agregar si tienen valor
+      if (formData.price && formData.price > 0) {
+        productData.price = Number(formData.price);
+      }
+      if (formData.stock && formData.stock > 0) {
+        productData.stock = Number(formData.stock);
+      }
+      if (formData.sku && formData.sku.trim()) {
+        productData.sku = formData.sku.trim();
+      }
 
       console.log('💾 Guardando producto con catalogId:', catalogId);
       console.log(`📊 Tamaño estimado: ${(totalSizeEstimate / 1024).toFixed(2)} KB`);
@@ -666,9 +674,11 @@ export const ProductsManagement: React.FC = () => {
                           />
                           <div className="p-3 bg-gray-50">
                             <p className="font-medium text-sm text-gray-900">{formData.name || 'Nombre del producto'}</p>
-                            <p className="text-sm text-primary-600 font-semibold mt-1">
-                              {formData.price > 0 ? formatPrice(formData.price) : '$0'}
-                            </p>
+                            {formData.price > 0 && (
+                              <p className="text-sm text-primary-600 font-semibold mt-1">
+                                {formatPrice(formData.price)}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -806,7 +816,7 @@ export const ProductsManagement: React.FC = () => {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                        {formatPrice(product.price)}
+                        {product.price ? formatPrice(product.price) : <span className="text-gray-400">-</span>}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
