@@ -126,18 +126,19 @@ export const CatalogPage: React.FC = () => {
                 {/* Botón "Todos" */}
                 <button
                   onClick={() => setSelectedCategory('all')}
+                  style={{
+                    backgroundColor: selectedCategory === 'all' ? '#0284c7' : '#f3f4f6',
+                    color: selectedCategory === 'all' ? '#ffffff' : '#374151',
+                  }}
                   className={`
                     px-4 py-2 rounded-full font-medium text-sm transition-all duration-200
-                    ${selectedCategory === 'all'
-                      ? 'bg-primary-600 !text-white shadow-md transform scale-105'
-                      : 'bg-gray-100 !text-gray-700 hover:bg-gray-200'
-                    }
+                    ${selectedCategory === 'all' ? 'shadow-md transform scale-105' : 'hover:bg-gray-200'}
                   `}
                 >
                   <span>
                     Todos
                   </span>
-                  <span className={`ml-2 text-xs ${selectedCategory === 'all' ? 'opacity-90' : 'opacity-75'}`}>
+                  <span className="ml-2 text-xs opacity-75">
                     ({currentCatalog.products.length})
                   </span>
                 </button>
@@ -147,18 +148,19 @@ export const CatalogPage: React.FC = () => {
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
+                    style={{
+                      backgroundColor: selectedCategory === category ? '#0284c7' : '#f3f4f6',
+                      color: selectedCategory === category ? '#ffffff' : '#374151',
+                    }}
                     className={`
                       px-4 py-2 rounded-full font-medium text-sm transition-all duration-200
-                      ${selectedCategory === category
-                        ? 'bg-primary-600 !text-white shadow-md transform scale-105'
-                        : 'bg-gray-100 !text-gray-700 hover:bg-gray-200'
-                      }
+                      ${selectedCategory === category ? 'shadow-md transform scale-105' : 'hover:bg-gray-200'}
                     `}
                   >
                     <span>
                       {category}
                     </span>
-                    <span className={`ml-2 text-xs ${selectedCategory === category ? 'opacity-90' : 'opacity-75'}`}>
+                    <span className="ml-2 text-xs opacity-75">
                       ({categoryCounts[category] || 0})
                     </span>
                   </button>
