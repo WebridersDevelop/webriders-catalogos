@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCatalog } from '@/contexts/CatalogContext';
 import { CatalogHeader } from '@/components/CatalogHeader';
@@ -11,12 +11,29 @@ export const CatalogPage: React.FC = () => {
   const { currentCatalog, loading, error, loadCatalog } = useCatalog();
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   useEffect(() => {
     if (slug) {
       loadCatalog(slug);
     }
   }, [slug]);
+
+  // Obtener categorías únicas
+  const categories = useMemo(() => {
+    if (!currentCatalog) return [];
+    const uniqueCategories = Array.from(new Set(currentCatalog.products.map(p => p.category)));
+    return uniqueCategories.sort();
+  }, [currentCatalog]);
+
+  // Contar productos por categoría
+  const categoryCounts = useMemo(() => {
+    if (!currentCatalog) return {};
+    return currentCatalog.products.reduce((acc, product) => {
+      acc[product.category] = (acc[product.category] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+  }, [currentCatalog]);
 
   useEffect(() => {
     if (currentCatalog) {
@@ -27,16 +44,27 @@ export const CatalogPage: React.FC = () => {
         productos_data: currentCatalog.products
       });
 
-      const filtered = currentCatalog.products.filter((product) =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      let filtered = currentCatalog.products;
+
+      // Filtrar por categoría
+      if (selectedCategory !== 'all') {
+        filtered = filtered.filter(product => product.category === selectedCategory);
+      }
+
+      // Filtrar por búsqueda
+      if (searchQuery) {
+        filtered = filtered.filter((product) =>
+          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.category.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
       setFilteredProducts(filtered);
 
       console.log(`📊 ${filtered.length} productos después del filtro`);
     }
-  }, [currentCatalog, searchQuery]);
+  }, [currentCatalog, searchQuery, selectedCategory]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -78,15 +106,115 @@ export const CatalogPage: React.FC = () => {
       <CatalogHeader catalog={currentCatalog} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <SearchBar onSearch={handleSearch} />
+        {/* Barra de búsqueda */}
+        <div className="mb-8">
+          <SearchBar onSearch={handleSearch} />
+        </div>
 
+        {/* Filtros de categoría */}
+        {categories.length > 0 && (
+          <div className="mb-8">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Categorías</h2>
+                <span className="text-sm text-gray-500">
+                  {filteredProducts.length} {filteredProducts.length === 1 ? 'producto' : 'productos'}
+                </span>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {/* Botón "Todos" */}
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className={`
+                    px-4 py-2 rounded-full font-medium text-sm transition-all duration-200
+                    ${selectedCategory === 'all'
+                      ? 'bg-primary-600 text-white shadow-md transform scale-105'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }
+                  `}
+                >
+                  Todos
+                  <span className="ml-2 text-xs opacity-75">
+                    ({currentCatalog.products.length})
+                  </span>
+                </button>
+
+                {/* Botones de categorías */}
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`
+                      px-4 py-2 rounded-full font-medium text-sm transition-all duration-200
+                      ${selectedCategory === category
+                        ? 'bg-primary-600 text-white shadow-md transform scale-105'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }
+                    `}
+                  >
+                    {category}
+                    <span className="ml-2 text-xs opacity-75">
+                      ({categoryCounts[category] || 0})
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Grid de productos */}
         {filteredProducts.length > 0 ? (
-          <ProductGrid products={filteredProducts} />
+          <>
+            {/* Indicador de filtro activo */}
+            {(selectedCategory !== 'all' || searchQuery) && (
+              <div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                <span>
+                  Mostrando {filteredProducts.length} {filteredProducts.length === 1 ? 'producto' : 'productos'}
+                  {selectedCategory !== 'all' && ` en "${selectedCategory}"`}
+                  {searchQuery && ` que coinciden con "${searchQuery}"`}
+                </span>
+                {(selectedCategory !== 'all' || searchQuery) && (
+                  <button
+                    onClick={() => {
+                      setSelectedCategory('all');
+                      setSearchQuery('');
+                    }}
+                    className="ml-2 text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    Limpiar filtros
+                  </button>
+                )}
+              </div>
+            )}
+
+            <ProductGrid products={filteredProducts} />
+          </>
         ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">
-              {searchQuery ? 'No se encontraron productos' : 'No hay productos disponibles'}
+          <div className="text-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300">
+            <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+            <p className="text-gray-500 text-lg font-medium mb-2">
+              {searchQuery || selectedCategory !== 'all'
+                ? 'No se encontraron productos'
+                : 'No hay productos disponibles'}
             </p>
+            {(searchQuery || selectedCategory !== 'all') && (
+              <button
+                onClick={() => {
+                  setSelectedCategory('all');
+                  setSearchQuery('');
+                }}
+                className="mt-4 text-primary-600 hover:text-primary-700 font-medium"
+              >
+                Ver todos los productos
+              </button>
+            )}
           </div>
         )}
       </main>
