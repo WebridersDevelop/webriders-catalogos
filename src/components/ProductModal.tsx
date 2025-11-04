@@ -52,6 +52,21 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
                 <p className="text-gray-600">{product.description}</p>
               </div>
 
+              {/* Atributos personalizables */}
+              {product.attributes && product.attributes.length > 0 && (
+                <div className="pt-4 border-t">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Detalles del producto</h3>
+                  <div className="grid grid-cols-1 gap-2">
+                    {product.attributes.map((attr, index) => (
+                      <div key={index} className="flex items-start justify-between py-2 border-b border-gray-100 last:border-0">
+                        <span className="text-gray-600 font-medium">{attr.name}:</span>
+                        <span className="text-gray-900 text-right">{attr.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {((product.sku && product.sku.trim() !== '') || (product.stock !== undefined && product.stock > 0)) && (
                 <div className="space-y-2 pt-4 border-t">
                   {product.sku && product.sku.trim() !== '' && (

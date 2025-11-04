@@ -1,3 +1,8 @@
+export interface ProductAttribute {
+  name: string;
+  value: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -8,6 +13,7 @@ export interface Product {
   category: string;
   stock?: number;
   sku?: string;
+  attributes?: ProductAttribute[]; // Atributos personalizables (ej: "Medidas: 38mm", "Modelos: Serie 3, 4, 5")
 }
 
 export interface Catalog {

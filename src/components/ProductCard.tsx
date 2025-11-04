@@ -27,6 +27,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails
         <h3 className="text-lg font-semibold text-gray-900">{product.name}</h3>
         <p className="text-gray-600 text-sm line-clamp-2">{product.description}</p>
 
+        {/* Mostrar primeros 2-3 atributos clave */}
+        {product.attributes && product.attributes.length > 0 && (
+          <div className="flex flex-wrap gap-2 pt-1">
+            {product.attributes.slice(0, 3).map((attr, index) => (
+              <div key={index} className="flex items-center gap-1 text-xs bg-gray-100 px-2 py-1 rounded">
+                <span className="font-medium text-gray-700">{attr.name}:</span>
+                <span className="text-gray-600">{attr.value}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {(product.price > 0 || (product.sku && product.sku.trim() !== '')) && (
           <div className="flex items-center justify-between pt-2">
             {product.price > 0 && (
