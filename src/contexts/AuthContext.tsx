@@ -38,14 +38,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       try {
         if (firebaseUser) {
           // Usuario autenticado, obtener sus datos de Firestore
-          const userData = await getUserData(firebaseUser.uid);
-          setUser(userData);
+          try {
+            const userData = await getUserData(firebaseUser.uid);
+            setUser(userData);
+          } catch (err: any) {
+            console.error('Error al cargar datos del usuario:', err);
+            // Si el documento no existe o hay error de permisos, cerrar sesión
+            if (err.code === 'permission-denied' || err.message?.includes('no encontrado')) {
+              console.warn('Usuario sin documento en Firestore, cerrando sesión');
+              await signOut(auth);
+              setUser(null);
+            } else {
+              setError('Error al cargar datos del usuario');
+              setUser(null);
+            }
+          }
         } else {
           setUser(null);
         }
       } catch (err) {
-        console.error('Error al cargar datos del usuario:', err);
-        setError('Error al cargar datos del usuario');
+        console.error('Error en onAuthStateChanged:', err);
+        setError('Error al verificar autenticación');
         setUser(null);
       } finally {
         setLoading(false);
